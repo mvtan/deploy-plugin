@@ -67,7 +67,14 @@ public abstract class CargoContainerAdapter extends ContainerAdapter implements 
         String extension = FilenameUtils.getExtension(f.getAbsolutePath());
         if ("WAR".equalsIgnoreCase(extension)) {
             WAR war = createWAR(f);
+            
+            // Fix to support # context path
+            String fileName = FilenameUtils.getBaseName(f.getName());
+            if (fileName.contains("#")) {
+                contextPath = fileName.replaceAll("#", "/");
+            }
             if (!StringUtils.isEmpty(contextPath)) {
+                listener.getLogger().println("Setting contextPath to " + contextPath);
                 war.setContext(contextPath);
             }
             deployer.redeploy(war);
@@ -118,4 +125,5 @@ public abstract class CargoContainerAdapter extends ContainerAdapter implements 
             }
         });
     }
+
 }
